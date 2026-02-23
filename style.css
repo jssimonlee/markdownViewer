@@ -103,26 +103,19 @@ body.light .prose tr:hover td {
   border-color: transparent !important;
 }
 
-/* 다크 모드에서 보이는 해: 노란색 + 글로우 */
-#icon-sun {
-  color: #fbbf24;
-  filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.8));
-  transition: transform 0.35s ease;
-}
-
-/* 라이트 모드에서 보이는 달: 진한 남색 */
-#icon-moon {
-  color: #3730a3;
-  filter: drop-shadow(0 0 3px rgba(55, 48, 163, 0.3));
-  transition: transform 0.35s ease;
+/* Premium Theme Icons (SVG 내부 속성 사용) */
+.premium-icon {
+  width: 24px !important;
+  height: 24px !important;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
 }
 
 #btn-theme:hover #icon-sun {
-  transform: rotate(30deg);
+  transform: rotate(90deg) scale(1.15);
 }
 
 #btn-theme:hover #icon-moon {
-  transform: rotate(-20deg);
+  transform: rotate(-15deg) scale(1.15);
 }
 
 /* Smooth theme transition */
@@ -281,7 +274,19 @@ body {
 .sidebar-section+.sidebar-section {
   border-top: 1px solid var(--border);
   flex: 0 0 auto;
+}
+
+#recent-section {
   max-height: 200px;
+}
+
+#guide-section {
+  transition: flex 0.3s ease;
+}
+
+#guide-section:has(#guide-toggle[aria-expanded="true"]) {
+  flex: 0 0 55vh;
+  /* 왼쪽 패널 중앙 이상 (55%) 확보 */
 }
 
 .section-label {
@@ -928,29 +933,30 @@ button:disabled {
 
 #guide-panel {
   overflow-y: auto;
-  max-height: 340px;
+  flex: 1;
+  max-height: none;
   padding-bottom: 8px;
 }
 
 /* Category header */
 .guide-category {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
   color: var(--accent);
-  padding: 10px 16px 4px;
+  padding: 12px 18px 6px;
 }
 
 /* Guide item row */
 .guide-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 14px;
+  gap: 12px;
+  padding: 8px 16px;
   cursor: pointer;
   border-radius: 6px;
-  margin: 0 6px;
+  margin: 3px 6px;
   transition: background var(--transition);
 }
 
@@ -964,12 +970,13 @@ button:disabled {
 
 .guide-syntax {
   font-family: var(--font-code);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--accent);
   background: rgba(88, 166, 255, 0.1);
   border: 1px solid rgba(88, 166, 255, 0.2);
   border-radius: 4px;
-  padding: 1px 6px;
+  padding: 2px 8px;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -980,20 +987,20 @@ body.light .guide-syntax {
 }
 
 .guide-desc {
-  font-size: 0.74rem;
-  color: var(--text-faint);
+  font-size: 0.82rem;
+  color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .guide-item:hover .guide-desc {
-  color: var(--text-muted);
+  color: var(--text);
 }
 
 /* Hint badge (click action) */
 .guide-hint {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   color: var(--text-faint);
   margin-left: auto;
   flex-shrink: 0;
