@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MD Viewer</title>
+  <meta name="description" content="로컬 마크다운 파일을 아름답게 렌더링하는 프리미엄 뷰어" />
+
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- marked.js v4 (stable API) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Drag & Drop Overlay -->
+  <div id="drop-overlay">
+    <div class="drop-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-3.5-3.5M12 16l3.5-3.5M4 20h16" />
+      </svg>
+      <p>파일을 여기에 놓으세요</p>
+    </div>
+  </div>
+
+  <!-- App Shell -->
+  <div id="app">
+
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <span class="logo">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M14.5 2.5a2 2 0 0 1 2 2V5h1a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h1v-.5a2 2 0 0 1 2-2h5.5zm0 1.5H9a.5.5 0 0 0-.5.5V5h7v-.5a.5.5 0 0 0-.5-.5zM6 6.5a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5h12a.5.5 0 0 0 .5-.5V7a.5.5 0 0 0-.5-.5H6z" />
+          </svg>
+          MD Viewer
+        </span>
+      </div>
+
+      <!-- TOC Section -->
+      <div class="sidebar-section" id="toc-section">
+        <div class="section-label">목차</div>
+        <nav id="toc">
+          <p class="toc-placeholder">파일을 열면 목차가 표시됩니다.</p>
+        </nav>
+      </div>
+
+      <!-- Recent Files -->
+      <div class="sidebar-section" id="recent-section">
+        <div class="section-label">최근 파일</div>
+        <ul id="recent-list"></ul>
+      </div>
+
+      <!-- MD Guide -->
+      <div class="sidebar-section" id="guide-section">
+        <button class="section-label section-toggle" id="guide-toggle" aria-expanded="false">
+          <span>MD 가이드</span>
+          <svg class="toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div id="guide-panel" class="hidden">
+          <div id="guide-list"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div id="main">
+
+      <!-- Toolbar -->
+      <header id="toolbar">
+        <div class="toolbar-left">
+          <button id="btn-sidebar" title="사이드바 토글" aria-label="사이드바 토글">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <span id="file-name">파일 없음</span>
+        </div>
+        <div class="toolbar-right">
+          <button id="btn-theme" title="테마 전환" aria-label="테마 전환">
+            <!-- moon icon (shown in LIGHT mode → click to go dark) -->
+            <svg id="icon-moon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <!-- sun icon (shown in DARK mode → click to go light) -->
+            <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <button id="btn-edit-toggle" title="편집 / 미리보기 전환">
+            <svg id="icon-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            편집
+          </button>
+          <button id="btn-open" title="MD 파일 열기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
+            </svg>
+            열기
+          </button>
+          <button id="btn-save" title="MD 파일로 저장" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            저장
+          </button>
+          <button id="btn-new" title="새 파일">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
+            </svg>
+            새 파일
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area: split when editing -->
+      <div id="content-wrapper">
+
+        <!-- Editor Pane (hidden by default) -->
+        <div id="editor-pane" class="hidden">
+          <textarea id="md-input" spellcheck="false" placeholder="여기에 마크다운을 작성하세요..."></textarea>
+        </div>
+
+        <!-- Preview Pane -->
+        <div id="preview-pane">
+          <!-- Welcome / Drop Zone -->
+          <div id="welcome">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="8" y="4" width="48" height="56" rx="4" />
+                <line x1="18" y1="18" x2="46" y2="18" />
+                <line x1="18" y1="26" x2="46" y2="26" />
+                <line x1="18" y1="34" x2="38" y2="34" />
+                <line x1="18" y1="42" x2="42" y2="42" />
+              </svg>
+            </div>
+            <h1>MD Viewer</h1>
+            <p>마크다운 파일을 드래그 앤 드롭하거나<br />버튼을 눌러 파일을 선택하세요.</p>
+            <button id="btn-open-welcome">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
+              </svg>
+              파일 열기
+            </button>
+          </div>
+
+          <!-- Rendered Markdown -->
+          <article id="preview" class="prose hidden"></article>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Hidden File Input -->
+  <input type="file" id="file-input" accept=".md,.markdown,.txt" style="display:none" />
+
+  <script src="app.js"></script>
+</body>
+
+</html>
