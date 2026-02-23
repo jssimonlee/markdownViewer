@@ -12,40 +12,49 @@
 }
 
 :root {
-  --bg: #0d1117;
-  --surface: #161b22;
+  /* Premium Dark Theme */
+  --bg: #090c10;
+  --surface: #12161d;
   --surface2: #1c2128;
+  --sidebar-bg: #0e1116;
+  --toolbar-bg: rgba(18, 22, 29, 0.75);
+  --editor-bg: #0d1117;
   --glass: rgba(255, 255, 255, 0.04);
   --border: rgba(255, 255, 255, 0.08);
-  --accent: #58a6ff;
-  --accent-glow: rgba(88, 166, 255, 0.25);
+  --accent: #646cff;
+  /* Premium violet-blue */
+  --accent-glow: rgba(100, 108, 255, 0.25);
   --accent2: #7c3aed;
   --success: #3fb950;
   --text: #e6edf3;
   --text-muted: #8b949e;
   --text-faint: #484f58;
-  --sidebar-w: 270px;
-  --header-h: 54px;
-  --radius: 10px;
+  --sidebar-w: 280px;
+  --header-h: 56px;
+  --radius: 12px;
   --font: 'Inter', system-ui, sans-serif;
   --font-code: 'Fira Code', 'Courier New', monospace;
-  --transition: 0.2s ease;
+  --transition: 0.25s ease;
 }
 
 /* ========== Light Theme ========== */
 body.light {
-  --bg: #f6f8fa;
+  /* Premium Light Theme */
+  --bg: #f8fafc;
   --surface: #ffffff;
-  --surface2: #eaeef2;
+  --surface2: #f1f5f9;
+  --sidebar-bg: #eef2f6;
+  --toolbar-bg: rgba(255, 255, 255, 0.75);
+  --editor-bg: #ffffff;
   --glass: rgba(0, 0, 0, 0.04);
-  --border: rgba(0, 0, 0, 0.09);
-  --accent: #0969da;
-  --accent-glow: rgba(9, 105, 218, 0.14);
+  --border: rgba(0, 0, 0, 0.08);
+  --accent: #4f46e5;
+  --accent-glow: rgba(79, 70, 229, 0.14);
   --accent2: #6f42c1;
   --success: #1a7f37;
-  --text: #1f2328;
-  --text-muted: #57606a;
-  --text-faint: #9198a1;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --text-faint: #94a3b8;
 }
 
 /* Light: drop overlay */
@@ -136,7 +145,7 @@ html {
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background: var(--sidebar-bg);
   color: var(--text);
   height: 100dvh;
   overflow: hidden;
@@ -223,8 +232,8 @@ body {
 #sidebar {
   width: var(--sidebar-w);
   min-width: var(--sidebar-w);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
+  background: transparent;
+  border-right: none;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -392,19 +401,36 @@ body {
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+  background: var(--bg);
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+  border: 1px solid var(--border);
+  border-right: none;
+  box-shadow: -6px 0 30px rgba(0, 0, 0, 0.25);
+  margin: 8px 0 8px 0;
+  position: relative;
+}
+
+body.light #main {
+  box-shadow: -6px 0 30px rgba(0, 0, 0, 0.05);
 }
 
 /* ---------- Toolbar ---------- */
 #toolbar {
   height: var(--header-h);
-  background: var(--surface);
+  background: var(--toolbar-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
+  border-top-left-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding: 0 16px;
   gap: 10px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .toolbar-left,
@@ -839,6 +865,7 @@ button:disabled {
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
+  background: var(--editor-bg);
 }
 
 #editor-pane.hidden {
@@ -856,7 +883,7 @@ button:disabled {
   width: 100%;
   height: 100%;
   padding: 32px 28px;
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
   font-family: var(--font-code);
   font-size: 0.88rem;

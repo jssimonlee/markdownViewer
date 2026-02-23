@@ -492,6 +492,14 @@
     if ((e.ctrlKey || e.metaKey) && e.key === '\\') { e.preventDefault(); sidebar.classList.toggle('collapsed'); }
   });
 
+  /* ---- Warn Before Unload (Refresh/Close) ---- */
+  window.addEventListener('beforeunload', (e) => {
+    if (isDirty) {
+      e.preventDefault();
+      e.returnValue = ''; // Required for most browsers to show the warning dialog
+    }
+  });
+
   /* ---- Save as .md (edit-mode aware) ---- */
   async function saveFile() {
     // Read directly from textarea if editing
